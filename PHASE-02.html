@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandStay | Hotel Booking</title>
+    <style>
+        /* --- CSS VARIABLES & THEME --- */
+        :root {
+            --primary: #2a9d8f;
+            --primary-dark: #264653;
+            --secondary: #f4a261;
+            --bg-light: #f8f9fa;
+            --text-dark: #333333;
+            --text-muted: #6c757d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* --- NAVBAR --- */
+        header {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+        }
+
+        header h1 span {
+            color: var(--secondary);
+        }
+
+        /* --- SEARCH & FILTER HERO --- */
+        .search-container {
+            background: linear-gradient(rgba(38, 70, 83, 0.8), rgba(38, 70, 83, 0.8)), 
+                        url('https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&q=80') no-repeat center center/cover;
+            padding: 4rem 2rem;
+            color: var(--white);
+            text-align: center;
+        }
+
+        .search-container h2 {
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .search-form {
+            background-color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .form-group label {
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input, .form-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-search {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 0 2rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            align-self: flex-end;
+            height: 48px;
+            margin-top: auto;
+        }
+
+        .btn-search:hover {
+            background-color: #218376;
+        }
+
+        /* --- MAIN LAYOUT --- */
+        .main-content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* --- HOTEL GRID --- */
+        .hotel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .hotel-card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hotel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .hotel-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .hotel-details {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .hotel-name {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-dark);
+        }
+
+        .hotel-location {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .hotel-price {
+            font-size: 1.4rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-top: auto;
+            margin-bottom: 1rem;
+        }
+
+        .hotel-price span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        .btn-book {
+            background-color: var(--secondary);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-book:hover {
+            background-color: #e58e47;
+        }
+
+        /* --- BOOKING MODAL --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow);
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .booking-summary {
+            background-color: var(--bg-light);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .booking-summary div {
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @browser (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            .btn-search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Grand<span>Stay</span></h1>
+        <div id="user-status">Welcome, Guest</div>
+    </header>
+
+    <section class="search-container">
+        <h2>Find Your Perfect Stay</h2>
+        <form class="search-form" id="searchForm">
+            <div class="form-group">
+                <label for="destination">Destination</label>
+                <select id="destination">
+                    <option value="all">All Locations</option>
+                    <option value="New York">New York</option>
+                    <option value="Paris">Paris</option>
+                    <option value="Tokyo">Tokyo</option>
+                    <option value="Maldives">Maldives</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="checkin">Check-In</label>
+                <input type="date" id="checkin" required>
+            </div>
+            <div class="form-group">
+                <label for="checkout">Check-Out</label>
+                <input type="date" id="checkout" required>
+            </div>
+            <div class="form-group">
+                <label for="max-price">Max Price (per night)</label>
+                <select id="max-price">
+                    <option value="any">Any Price</option>
+                    <option value="200">$200 or less</option>
+                    <option value="400">$400 or less</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-search">Search</button>
+        </form>
+    </section>
+
+    <main class="main-content">
+        <h2>Available Properties</h2>
+        <div class="hotel-grid" id="hotelGrid">
+            </div>
+    </main>
+
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h3>Confirm Your Booking</h3>
+            <div class="booking-summary" id="bookingSummary">
+                </div>
+            <form id="confirmBookingForm">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="guestName">Full Name</label>
+                    <input type="text" id="guestName" required placeholder="John Doe">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="guestEmail">Email Address</label>
+                    <input type="email" id="guestEmail" required placeholder="john@example.com">
+                </div>
+                <button type="submit" class="btn-book">Complete Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA MOCK ---
+        const hotels = [
+            { id: 1, name: "The Plaza Hotel", location: "New York", price: 450, img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=500&q=80" },
+            { id: 2, name: "Eiffel Vista Resort", location: "Paris", price: 290, img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=500&q=80" },
+            { id: 3, name: "Shibuya Capsule Stay", location: "Tokyo", price: 85, img: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=500&q=80" },
+            { id: 4, name: "Crystal Waters Lagoon", location: "Maldives", price: 600, img: "https://images.unsplash.com/photo-1439066615861-d1af74d74000?auto=format&fit=crop&w=500&q=80" },
+            { id: 5, name: "Manhattan Central Inn", location: "New York", price: 180, img: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=500&q=80" },
+            { id: 6, name: "Le Marais Boutique", location: "Paris", price: 195, img: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=500&q=80" }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const hotelGrid = document.getElementById('hotelGrid');
+        const searchForm = document.getElementById('searchForm');
+        const bookingModal = document.getElementById('bookingModal');
+        const closeModal = document.getElementById('closeModal');
+        const bookingSummary = document.getElementById('bookingSummary');
+        const confirmBookingForm = document.getElementById('confirmBookingForm');
+
+        // Setup dynamic dates for ease of testing (Today & Tomorrow)
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        document.getElementById('checkin').value = today;
+        document.getElementById('checkout').value = tomorrow;
+
+        let selectedHotel = null;
+
+        // --- RENDER HOTELS ---
+        function displayHotels(filteredHotels) {
+            hotelGrid.innerHTML = '';
+            if (filteredHotels.length === 0) {
+                hotelGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No properties match your exact criteria.</p>`;
+                return;
+            }
+
+            filteredHotels.forEach(hotel => {
+                const card = document.createElement('div');
+                card.className = 'hotel-card';
+                card.innerHTML = `
+                    <img src="${hotel.img}" alt="${hotel.name}" class="hotel-img">
+                    <div class="hotel-details">
+                        <h3 class="hotel-name">${hotel.name}</h3>
+                        <div class="hotel-location">📍 ${hotel.location}</div>
+                        <div class="hotel-price">$${hotel.price} <span>/ night</span></div>
+                        <button class="btn-book" onclick="openBookingModal(${hotel.id})">Book Now</button>
+                    </div>
+                `;
+                hotelGrid.appendChild(card);
+            });
+        }
+
+        // --- FILTER FUNCTION ---
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const destValue = document.getElementById('destination').value;
+            const priceValue = document.getElementById('max-price').value;
+
+            const filtered = hotels.filter(hotel => {
+                const matchesDest = (destValue === 'all' || hotel.location === destValue);
+                const matchesPrice = (priceValue === 'any' || hotel.price <= parseInt(priceValue));
+                return matchesDest && matchesPrice;
+            });
+
+            displayHotels(filtered);
+        });
+
+        // --- MODAL WORKFLOW ---
+        window.openBookingModal = function(id) {
+            selectedHotel = hotels.find(h => h.id === id);
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+
+            // Calculate stays nights
+            const days = Math.ceil((new Date(checkout) - new Date(checkin)) / (1000 * 60 * 60 * 24)) || 1;
+
+            bookingSummary.innerHTML = `
+                <strong>Property:</strong> ${selectedHotel.name}<br>
+                <strong>Location:</strong> ${selectedHotel.location}<br>
+                <strong>Duration:</strong> ${checkin} to ${checkout} (${days} Night(s))<br>
+                <strong>Total Price:</strong> $${selectedHotel.price * days}
+            `;
+            bookingModal.style.display = 'flex';
+        }
+
+        closeModal.addEventListener('click', () => {
+            bookingModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === bookingModal) bookingModal.style.display = 'none';
+        });
+
+        confirmBookingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert(`Success! Thank you ${document.getElementById('guestName').value}. Your reservation at ${selectedHotel.name} has been confirmed!`);
+            bookingModal.style.display = 'none';
+            confirmBookingForm.reset();
+        });
+
+        // Initial Initialization
+        displayHotels(hotels);
+    </script>
+</body>
+</html>
